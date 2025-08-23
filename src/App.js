@@ -588,7 +588,7 @@ function App() {
               </p>
               <div className="results-buttons">
                 <button className="spin-bonus-btn" onClick={handleSpinForPrize}>
-                  Claim Bonus Prize! 🎁
+                  Claim Prize
                 </button>
                 <button className="restart-btn" onClick={restartQuiz}>
                   Take Quiz Again
@@ -597,7 +597,7 @@ function App() {
             </div>
           ) : (
             <div className="spinner-section">
-              <h2 className="spinner-title">🎰 Bonus Prize Wheel! 🎰</h2>
+              <h2 className="spinner-title">Bonus Prize Wheel</h2>
               <p className="spinner-subtitle">Spin to win your reward!</p>
               <SpinnerWheel 
                 onPrizeWon={handlePrizeWon}
@@ -615,6 +615,10 @@ function App() {
           triggerPrizeCelebration={triggerPrizeCelebration}
           triggerConfetti={triggerConfetti}
         />
+        
+        <footer className="app-footer">
+          By <a href="https://www.audienclature.com" target="_blank" rel="noopener noreferrer">Lakshman Turlapati</a> | <a href="https://aibizclub.org" target="_blank" rel="noopener noreferrer">AI Biz Club</a> | <a href="https://www.utdallas.edu" target="_blank" rel="noopener noreferrer">UTD</a>
+        </footer>
       </div>
     );
   }
@@ -666,6 +670,10 @@ function App() {
           )}
         </div>
       </div>
+      
+      <footer className="app-footer">
+        By <a href="https://www.audienclature.com" target="_blank" rel="noopener noreferrer">Lakshman Turlapati</a> | <a href="https://aibizclub.org" target="_blank" rel="noopener noreferrer">AI Biz Club</a> | <a href="https://www.utdallas.edu" target="_blank" rel="noopener noreferrer">UTD</a>
+      </footer>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 .App {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0E2039 0%, #285688 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
 }
 
 .quiz-container {
@@ -13,9 +13,11 @@
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   padding: 30px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
 }
 
 .progress-bar {
@@ -29,9 +31,19 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #45a049);
+  background: linear-gradient(90deg, #033D70, #285688);
   border-radius: 10px;
   transition: width 0.5s ease;
+}
+
+/* Alternative blue progress for variety */
+.progress-fill.blue-theme {
+  background: linear-gradient(90deg, hsl(217, 91%, 60%), hsl(188, 78%, 55%));
+}
+
+/* Purple progress for special states */
+.progress-fill.purple-theme {
+  background: linear-gradient(90deg, hsl(280, 60%, 70%), hsl(300, 65%, 60%));
 }
 
 .question-counter {
@@ -44,15 +56,16 @@
 
 .question-card {
   text-align: center;
-  animation: slideIn 0.5s ease;
+  animation: fadeUp 0.3s ease-out;
 }
 
 .question-text {
-  color: #333;
+  color: hsl(210, 11%, 15%);
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 30px;
   line-height: 1.4;
+  font-family: 'Inter', sans-serif;
 }
 
 .answers-grid {
@@ -76,9 +89,11 @@
 }
 
 .answer-btn:hover:not(:disabled) {
-  border-color: #667eea;
+  border-color: #033D70;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  background: rgba(255, 255, 255, 1);
+  border: 1px solid #033D70;
 }
 
 .answer-btn:disabled {
@@ -93,9 +108,9 @@
 }
 
 .answer-btn.incorrect {
-  background: linear-gradient(135deg, #f44336, #d32f2f);
+  background: linear-gradient(135deg, hsl(0, 84%, 60%), hsl(0, 63%, 31%));
   color: white;
-  border-color: #f44336;
+  border-color: hsl(0, 84%, 60%);
   animation: incorrectShake 0.6s ease;
 }
 
@@ -106,7 +121,7 @@
 }
 
 .next-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #033D70, #285688);
   color: white;
   border: none;
   padding: 15px 30px;
@@ -120,17 +135,18 @@
 
 .next-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(3, 61, 112, 0.4);
 }
 
 .results-card {
   text-align: center;
-  animation: scaleIn 0.6s ease;
+  animation: scaleInCustom 0.6s ease;
 }
 
 .results-card h2 {
-  color: #333;
+  color: hsl(210, 11%, 15%);
   font-size: 28px;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 20px;
 }
 
@@ -141,7 +157,7 @@
 .score {
   font-size: 48px;
   font-weight: bold;
-  color: #4CAF50;
+  color: #033D70;
 }
 
 .total {
@@ -157,7 +173,7 @@
 }
 
 .restart-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #033D70, #285688);
   color: white;
   border: none;
   padding: 15px 30px;
@@ -170,7 +186,7 @@
 
 .restart-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(3, 61, 112, 0.4);
 }
 
 @keyframes slideIn {
@@ -224,7 +240,7 @@
 }
 
 .spin-bonus-btn {
-  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+  background: linear-gradient(135deg, hsl(24, 100%, 65%), hsl(34, 100%, 55%));
   color: white;
   border: none;
   padding: 18px 30px;
@@ -233,13 +249,13 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 4px 15px hsla(24, 100%, 65%, 0.4);
   animation: pulse 2s infinite;
 }
 
 .spin-bonus-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+  box-shadow: 0 8px 25px hsla(24, 100%, 65%, 0.6);
 }
 
 @keyframes pulse {
@@ -249,12 +265,13 @@
 
 .spinner-section {
   text-align: center;
-  animation: slideInUp 0.6s ease;
+  animation: fadeUp 0.6s ease;
 }
 
 .spinner-title {
-  color: #333;
+  color: hsl(210, 11%, 15%);
   font-size: 32px;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 10px;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
@@ -287,14 +304,14 @@
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
   transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
   background: conic-gradient(
-    #E74C3C 0deg 45deg,
-    #3498DB 45deg 90deg,
-    #2ECC71 90deg 135deg,
-    #F39C12 135deg 180deg,
-    #9B59B6 180deg 225deg,
-    #E67E22 225deg 270deg,
-    #1ABC9C 270deg 315deg,
-    #E91E63 315deg 360deg
+    #033D70 0deg 45deg,
+    #285688 45deg 90deg,
+    #0E2039 90deg 135deg,
+    #4a90e2 135deg 180deg,
+    #357abd 180deg 225deg,
+    #2980b9 225deg 270deg,
+    #1f618d 270deg 315deg,
+    #5dade2 315deg 360deg
   );
 }
 
@@ -342,7 +359,7 @@
 .center-circle {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+  background: linear-gradient(135deg, #0E2039, #033D70);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -367,13 +384,13 @@
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-top: 30px solid #2c3e50;
+  border-top: 30px solid #0E2039;
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .spin-button {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(188, 78%, 55%));
   color: white;
   border: none;
   padding: 20px 40px;
@@ -382,24 +399,24 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px hsla(217, 91%, 60%, 0.4);
   animation: spinButtonPulse 2s infinite;
 }
 
 .spin-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 10px 30px hsla(217, 91%, 60%, 0.6);
 }
 
 @keyframes spinButtonPulse {
-  0%, 100% { box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
-  50% { box-shadow: 0 6px 30px rgba(102, 126, 234, 0.8); }
+  0%, 100% { box-shadow: 0 6px 20px hsla(217, 91%, 60%, 0.4); }
+  50% { box-shadow: 0 6px 30px hsla(217, 91%, 60%, 0.8); }
 }
 
 .spinning-text {
   font-size: 24px;
   font-weight: bold;
-  color: #667eea;
+  color: #033D70;
   animation: bounce 1s infinite;
 }
 
@@ -445,8 +462,9 @@
 }
 
 .congrats-text {
-  color: #333;
+  color: hsl(210, 11%, 15%);
   font-size: 28px;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 20px;
   animation: congratsGlow 2s infinite;
 }
@@ -472,9 +490,10 @@
 }
 
 .prize-name-big {
-  color: #333;
+  color: hsl(210, 11%, 15%);
   font-size: 24px;
   font-weight: bold;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 10px;
 }
 
@@ -491,7 +510,7 @@
 }
 
 .claim-button {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #033D70, #285688);
   color: white;
   border: none;
   padding: 15px 25px;
@@ -504,11 +523,11 @@
 
 .claim-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 8px 20px rgba(3, 61, 112, 0.4);
 }
 
 .play-again-button {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(188, 78%, 55%));
   color: white;
   border: none;
   padding: 15px 25px;
@@ -521,7 +540,7 @@
 
 .play-again-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px hsla(217, 91%, 60%, 0.4);
 }
 
 @keyframes fadeInModal {
@@ -543,6 +562,54 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Uniclub-inspired utilities */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 1);
+  border: 1px solid hsla(142, 69%, 58%, 0.3);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.3s ease-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleInCustom 0.2s ease-out;
+}
+
+@keyframes scaleInCustom {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -605,4 +672,29 @@
   .congrats-text {
     font-size: 22px;
   }
+}
+
+/* App Footer */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: transparent;
+  text-align: center;
+  font-size: 9.8px;
+  color: white;
+  font-weight: 500;
+}
+
+.app-footer a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.app-footer a:hover {
+  color: white;
+  text-decoration: underline;
 }

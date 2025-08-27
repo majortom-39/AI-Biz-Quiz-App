@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import './App.css';
 
@@ -305,25 +306,42 @@ const allQuizData = [
   }
 ];
 
-function getRandomQuestions(questions, count = 10) {
+function getRandomQuestions(questions, count = 5) {
   const shuffled = [...questions].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
 const prizes = [
-  { id: 1, name: "Dry Erase Planner", icon: "📝", color: "#E74C3C" },
-  { id: 2, name: "Glitter Highlighter", icon: "✨", color: "#3498DB" },
-  { id: 3, name: "Gel Pen Set", icon: "🖊️", color: "#2ECC71" },
-  { id: 4, name: "Sticky Notes", icon: "📋", color: "#F39C12" },
-  { id: 5, name: "Spiral Notebook", icon: "📓", color: "#9B59B6" },
-  { id: 6, name: "Memory Game", icon: "🧠", color: "#E67E22" },
-  { id: 7, name: "Mini Stapler", icon: "📎", color: "#1ABC9C" },
-  { id: 8, name: "Color Markers", icon: "🖍️", color: "#E91E63" }
+  { id: 1, name: "Fun Pair of Socks", icon: "🧦", color: "#FF6B6B" },
+  { id: 2, name: "Stoneware Mug", icon: "☕", color: "#F7B267" },
+  { id: 3, name: "Travel Coffee Mug", icon: "🧋", color: "#4ECDC4" },
+  { id: 4, name: "Scented Candle", icon: "🕯️", color: "#45B7D1" },
+  { id: 5, name: "Luxury Crystal Beads Fragrance", icon: "🧴", color: "#96CEB4" },
+  { id: 6, name: "Brainstorm Journel", icon: "📓", color: "#9B59B6" }
 ];
 
 function SpinnerWheel({ onPrizeWon, isSpinning, setIsSpinning }) {
+  const segments = prizes.slice(0, 6);
   const [rotation, setRotation] = useState(0);
   const [selectedPrize, setSelectedPrize] = useState(null);
+  const [showWheelPrize, setShowWheelPrize] = useState(false);
+
+  // Prevent body shift when modal opens
+  React.useEffect(() => {
+    if (showWheelPrize) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = 'hidden';
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [showWheelPrize]);
 
   const spinWheel = () => {
     if (isSpinning) return;
@@ -334,60 +352,61 @@ function SpinnerWheel({ onPrizeWon, isSpinning, setIsSpinning }) {
     setRotation(finalRotation);
 
     setTimeout(() => {
-      const segmentAngle = 360 / prizes.length;
+      const segmentAngle = 360 / segments.length;
       const normalizedRotation = finalRotation % 360;
-      const prizeIndex = Math.floor((360 - normalizedRotation) / segmentAngle) % prizes.length;
-      const wonPrize = prizes[prizeIndex];
+      const prizeIndex = Math.floor((360 - normalizedRotation) / segmentAngle) % segments.length;
+      const wonPrize = segments[prizeIndex];
       
       setSelectedPrize(wonPrize);
       setIsSpinning(false);
       onPrizeWon(wonPrize);
+      setShowWheelPrize(true);
     }, 3000);
   };
 
   return (
     <div className="spinner-container">
-      <div className="spinner-wheel-wrapper">
+      <div className="wheel-stage">
         <div 
-          className={`spinner-wheel ${isSpinning ? 'spinning' : ''}`}
-          style={{ 
-            transform: `rotate(${rotation}deg)`,
-            '--total-segments': prizes.length
-          }}
+          className="wheel-rotator"
+          style={{ transform: `rotate(${rotation}deg)` }}
         >
+          <div 
+            className="wheel"
+            style={{ 
+              background: `conic-gradient(${segments
+              .map((s, i) => {
+                const a = 360 / segments.length;
+                const start = i * a;
+                const end = (i + 1) * a;
+                return `${s.color} ${start}deg ${end}deg`;
+              })
+              .join(', ')})`
+            }}
+          ></div>
           <div className="wheel-labels">
-            {prizes.map((prize, index) => {
-              const segmentAngle = 360 / prizes.length;
-              const rotationAngle = segmentAngle * index + segmentAngle / 2;
-              
+            {segments.map((s, index) => {
+              const segmentAngle = 360 / segments.length;
+              const rotate = index * segmentAngle + segmentAngle / 2;
               return (
                 <div
-                  key={prize.id}
-                  className="prize-segment-text"
-                  style={{
-                    transform: `rotate(${rotationAngle}deg)`
-                  }}
+                  key={s.id}
+                  className="wheel-label"
+                  style={{ transform: `translate(-50%, -50%) rotate(${rotate}deg) translateY(-100px)` }}
+                  title={s.name}
                 >
-                  <span className="prize-label-text">
-                    🎁
-                  </span>
+                  <span className="wheel-icon">{s.icon}</span>
                 </div>
               );
             })}
           </div>
         </div>
-        <div className="spinner-center">
-          <div className="center-circle">
-            <span className="center-text">SPIN</span>
-          </div>
-        </div>
-        <div className="spinner-pointer"></div>
+        <div className="wheel-center">Spin</div>
+        <div className="wheel-pointer"></div>
       </div>
       
       {!isSpinning && !selectedPrize && (
-        <button className="spin-button" onClick={spinWheel}>
-          Spin!
-        </button>
+        <button className="spin-cta" onClick={spinWheel}>Spin!</button>
       )}
       
       {isSpinning && (
@@ -395,54 +414,31 @@ function SpinnerWheel({ onPrizeWon, isSpinning, setIsSpinning }) {
           🎊 Spinning... 🎊
         </div>
       )}
+
+      {showWheelPrize && selectedPrize && createPortal(
+        (
+          <div className="wheel-prize-overlay">
+            <div className="wheel-prize-card">
+              <div className="wheel-prize-icon">{selectedPrize.icon}</div>
+              <div className="wheel-prize-title">Congratulations!</div>
+              <p>You have won <strong>{selectedPrize.name}</strong>.</p>
+              <p className="wheel-prize-note">Please ask the event officer to claim your prize.</p>
+              <div style={{ marginTop: '16px' }}>
+                <button className="wheel-home-btn" onClick={() => window.location.reload()}>Home</button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
     </div>
   );
 }
 
-function PrizeModal({ prize, onClose, onRestart, triggerPrizeCelebration, triggerConfetti }) {
-  // Trigger prize celebration sequence when modal appears
-  React.useEffect(() => {
-    if (prize && triggerPrizeCelebration) {
-      triggerPrizeCelebration();
-    }
-  }, [prize, triggerPrizeCelebration]);
-
-  const handleClaimPrize = () => {
-    // Bonus confetti when claiming prize
-    if (triggerConfetti) {
-      triggerConfetti(2, 'top');
-    }
-    onClose();
-  };
-
-  if (!prize) return null;
-
-  return (
-    <>
-      <div className="prize-modal-overlay">
-        <div className="prize-modal">
-          <h2 className="congrats-text">🎉 Congratulations! 🎉</h2>
-          <div className="prize-display">
-            <div className="prize-icon-big">{prize.icon}</div>
-            <h3 className="prize-name-big">{prize.name}</h3>
-          </div>
-          <p className="prize-message">You've won an amazing prize!</p>
-          <div className="modal-buttons">
-            <button className="claim-button" onClick={handleClaimPrize}>
-              Claim Prize!
-            </button>
-            <button className="play-again-button" onClick={onRestart}>
-              Play Again
-            </button>
-          </div>
-        </div>
-      </div>
-      <canvas id="confetti-canvas"></canvas>
-    </>
-  );
-}
+// (Old PrizeModal removed)
 
 function App() {
+  const [showStartup, setShowStartup] = useState(true);
   const [quizData, setQuizData] = useState(() => getRandomQuestions(allQuizData));
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -452,6 +448,48 @@ function App() {
   const [showSpinner, setShowSpinner] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [wonPrize, setWonPrize] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  const startQuiz = () => {
+    setShowStartup(false);
+  };
+
+  // Timer effect for countdown
+  React.useEffect(() => {
+    if (!showStartup && !showResults && !answered && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            // Time's up - auto-advance to next question
+            handleTimeUp();
+            return 10; // Reset timer for next question
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [showStartup, showResults, answered, timeLeft]);
+
+  // Reset timer when moving to next question
+  React.useEffect(() => {
+    setTimeLeft(10);
+  }, [currentQuestion]);
+
+  // Debug: Log the timer value changes
+  React.useEffect(() => {
+    console.log('Timer value:', timeLeft, 'Fill height:', ((10 - timeLeft) / 10) * 100 + '%');
+  }, [timeLeft]);
+
+  const handleTimeUp = () => {
+    if (!answered) {
+      // Auto-select wrong answer (time's up)
+      setSelectedAnswer(-1); // -1 indicates time's up
+      setAnswered(true);
+      // Don't add to score since they didn't answer
+    }
+  };
 
   // Reusable confetti function with pattern support
   const triggerConfetti = (intensity = 1, pattern = 'center') => {
@@ -517,14 +555,11 @@ function App() {
     }, 1300);
   };
 
-  // Trigger confetti when quiz is completed
+  // Trigger confetti only for perfect score when results are shown
   React.useEffect(() => {
-    if (showResults) {
+    if (showResults && score === quizData.length) {
       const timer = setTimeout(() => {
-        const scorePercentage = (score / quizData.length) * 100;
-        // More confetti for better scores
-        const intensity = scorePercentage >= 80 ? 1.5 : scorePercentage >= 60 ? 1 : 0.7;
-        triggerConfetti(intensity);
+        triggerConfetti(1.5);
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -552,6 +587,7 @@ function App() {
   };
 
   const restartQuiz = () => {
+    setShowStartup(true);
     setQuizData(getRandomQuestions(allQuizData));
     setCurrentQuestion(0);
     setSelectedAnswer(null);
@@ -561,6 +597,7 @@ function App() {
     setShowSpinner(false);
     setIsSpinning(false);
     setWonPrize(null);
+    setTimeLeft(10);
   };
 
   const handlePrizeWon = (prize) => {
@@ -581,23 +618,27 @@ function App() {
               <h2>Quiz Complete!</h2>
               <div className="score-display">
                 <span className="score">{score}</span>
-                <span className="total">/ {quizData.length}</span>
+                <span className="total">/{quizData.length}</span>
               </div>
-              <p className="score-text">
-                You scored {Math.round((score / quizData.length) * 100)}%
-              </p>
+              {score === quizData.length ? (
+                <p className="score-text">🎉 Perfect score! You nailed it!</p>
+              ) : (
+                <p className="score-text">You scored {Math.round((score / quizData.length) * 100)}%</p>
+              )}
               <div className="results-buttons">
-                <button className="spin-bonus-btn" onClick={handleSpinForPrize}>
-                  Claim Prize
-                </button>
-                <button className="restart-btn" onClick={restartQuiz}>
-                  Take Quiz Again
-                </button>
+                {score === quizData.length ? (
+                  <button className="spin-bonus-btn" onClick={handleSpinForPrize}>
+                    Claim Prize
+                  </button>
+                ) : (
+                  <button className="home-btn" onClick={restartQuiz}>
+                    Home
+                  </button>
+                )}
               </div>
             </div>
           ) : (
             <div className="spinner-section">
-              <h2 className="spinner-title">Bonus Prize Wheel</h2>
               <p className="spinner-subtitle">Spin to win your reward!</p>
               <SpinnerWheel 
                 onPrizeWon={handlePrizeWon}
@@ -608,17 +649,38 @@ function App() {
           )}
         </div>
         
-        <PrizeModal 
-          prize={wonPrize} 
-          onClose={() => setWonPrize(null)}
-          onRestart={restartQuiz}
-          triggerPrizeCelebration={triggerPrizeCelebration}
-          triggerConfetti={triggerConfetti}
-        />
-        
-        <footer className="app-footer">
-          By <a href="https://www.audienclature.com" target="_blank" rel="noopener noreferrer">Lakshman Turlapati</a> | <a href="https://aibizclub.org" target="_blank" rel="noopener noreferrer">AI Biz Club</a> | <a href="https://www.utdallas.edu" target="_blank" rel="noopener noreferrer">UTD</a>
-        </footer>
+      </div>
+    );
+  }
+
+  // Show startup page
+  if (showStartup) {
+    return (
+      <div className="App">
+        <div className="startup-container">
+          <div className="startup-content">
+            <div className="logo-section">
+              <img 
+                src="/logo/Logo.svg" 
+                alt="Quiz App Logo" 
+                className="startup-logo"
+                onError={(e) => {
+                  console.log('Logo failed to load:', e.target.src);
+                  e.target.style.display = 'none';
+                }}
+                onLoad={() => console.log('Logo loaded successfully')}
+              />
+            </div>
+            <div className="startup-info">
+              <button className="start-quiz-btn" onClick={startQuiz}>
+                Start the Quiz
+              </button>
+            </div>
+            <div className="author-section">
+              <p className="author-text">Created By <strong>Lakshman Turlapati | AI Biz Club | UTD</strong></p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -626,21 +688,48 @@ function App() {
   return (
     <div className="App">
       <div className="quiz-container">
-        <div className="progress-bar">
-          <div 
-            className="progress-fill" 
-            style={{ width: `${((currentQuestion + 1) / quizData.length) * 100}%` }}
-          ></div>
+        <div className="quiz-header">
+          <div className="quiz-header-content">
+            <div className="question-info">
+              <div className="question-number">Question {currentQuestion + 1}</div>
+              <div className="question-total">of {quizData.length}</div>
+            </div>
+            <div className={`timer ${timeLeft <= 5 ? 'warning' : ''}`}>
+              <div className="timer-fill-container">
+                <div 
+                  className="timer-fill timer-fill-green"
+                  style={{ 
+                    height: `${((10 - timeLeft) / 10) * 100}%`,
+                    opacity: timeLeft > 5 ? 1 : 0,
+                    transition: timeLeft === 10 ? 'height 0s, opacity 0.3s ease' : 'height 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease'
+                  }}
+                ></div>
+                <div 
+                  className="timer-fill timer-fill-red"
+                  style={{ 
+                    height: `${((10 - timeLeft) / 10) * 100}%`,
+                    opacity: timeLeft <= 5 ? 1 : 0,
+                    transition: timeLeft === 10 ? 'height 0s, opacity 0.3s ease' : 'height 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease'
+                  }}
+                ></div>
+              </div>
+              <span className="timer-text">{timeLeft}s</span>
+            </div>
+          </div>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${((currentQuestion + 1) / quizData.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
         
-        <div className="question-counter">
-          Question {currentQuestion + 1} of {quizData.length}
-        </div>
-
-        <div className="question-card">
-          <h2 className="question-text">
-            {quizData[currentQuestion].question}
-          </h2>
+        <div className="quiz-content">
+          <div className="question-card">
+            <h2 className="question-text">
+              {quizData[currentQuestion].question}
+            </h2>
+          </div>
 
           <div className="answers-grid">
             {quizData[currentQuestion].options.map((option, index) => (
@@ -651,7 +740,11 @@ function App() {
                     ? index === quizData[currentQuestion].correct 
                       ? 'correct' 
                       : 'incorrect'
-                    : answered && index === quizData[currentQuestion].correct
+                    : selectedAnswer === -1 && index === quizData[currentQuestion].correct
+                      ? 'correct-highlight'
+                      : selectedAnswer === -1
+                      ? 'timeout'
+                      : answered && index === quizData[currentQuestion].correct
                       ? 'correct-highlight'
                       : ''
                 }`}
@@ -664,16 +757,24 @@ function App() {
           </div>
 
           {answered && (
+            <div className="answer-feedback">
+              {selectedAnswer === -1 ? (
+                <div className="timeout-message">⏰ Time's up!</div>
+              ) : selectedAnswer === quizData[currentQuestion].correct ? (
+                <div className="correct-message">✅ Correct!</div>
+              ) : (
+                <div className="incorrect-message">❌ Incorrect</div>
+              )}
+            </div>
+          )}
+
+          {answered && (
             <button className="next-btn" onClick={handleNextQuestion}>
               {currentQuestion + 1 < quizData.length ? 'Next Question' : 'View Results'}
             </button>
           )}
         </div>
       </div>
-      
-      <footer className="app-footer">
-        By <a href="https://www.audienclature.com" target="_blank" rel="noopener noreferrer">Lakshman Turlapati</a> | <a href="https://aibizclub.org" target="_blank" rel="noopener noreferrer">AI Biz Club</a> | <a href="https://www.utdallas.edu" target="_blank" rel="noopener noreferrer">UTD</a>
-      </footer>
     </div>
   );
 }

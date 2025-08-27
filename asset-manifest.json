@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/AI-Biz-Quiz-App/static/css/main.bde292e7.css",
+    "main.js": "/AI-Biz-Quiz-App/static/js/main.50c8eccd.js",
+    "static/js/453.5979a855.chunk.js": "/AI-Biz-Quiz-App/static/js/453.5979a855.chunk.js",
+    "static/media/Background.svg": "/AI-Biz-Quiz-App/static/media/Background.03f076ce3c54e8e25f71.svg",
+    "index.html": "/AI-Biz-Quiz-App/index.html",
+    "main.bde292e7.css.map": "/AI-Biz-Quiz-App/static/css/main.bde292e7.css.map",
+    "main.50c8eccd.js.map": "/AI-Biz-Quiz-App/static/js/main.50c8eccd.js.map",
+    "453.5979a855.chunk.js.map": "/AI-Biz-Quiz-App/static/js/453.5979a855.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bde292e7.css",
+    "static/js/main.50c8eccd.js"
+  ]
+}
